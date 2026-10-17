@@ -3,8 +3,10 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="theme-color" content="#f7efff" />
+  <meta name="theme-color" content="#f7efff" id="themeColorMeta" />
+  <meta name="description" content="A little birthday dreamscape, made with love for Bhaji." />
   <title>For Bhaji ♡ — The Living Dreamscape</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%92%9C%3C/text%3E%3C/svg%3E" />
   <style>
     @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,500;1,600&display=swap');
 
@@ -17,11 +19,29 @@
       --peach: #ffd9c9;
       --cream: #fffaf7;
       --glass: rgba(255,255,255,.68);
+      --glass-solid: #ffffffa8;
+      --card-bg: #ffffffa8;
+      --card-bg-alt: #fff8ff;
+      --card-text: #715e80;
+      --note-bg-1: #fffaf4;
+      --note-bg-2: #f7f0ff;
+      --note-bg-3: #fff0f5;
+      --note-bg-4: #fff8e9;
       --line: rgba(112,79,145,.16);
+      --line-strong: #e1d5ed;
       --shadow: 0 24px 80px rgba(85, 55, 117, .13);
+      --timebox-bg: #fff9ff;
+      --timebox-border: #e9dff4;
+      --input-bg: #fffdfd;
+      --input-focus: #ad8cd2;
+      --mood-active-bg: linear-gradient(135deg,#e5d9ff,#ffe0eb);
+      --mood-active-border: #c6a8df;
+      --night-bg: radial-gradient(ellipse at 8% 8%,#5b3e7966,transparent 35%),
+                  radial-gradient(ellipse at 90% 20%,#9d5d8d55,transparent 35%),
+                  linear-gradient(135deg,#191326,#271b37 55%,#21182f);
     }
     * { box-sizing: border-box; }
-    html { scroll-behavior: smooth; }
+    html { scroll-behavior: smooth; scroll-padding-top: 24px; }
     body {
       margin: 0; color: var(--ink); font-family: "DM Sans", sans-serif;
       background:
@@ -30,6 +50,7 @@
         radial-gradient(ellipse at 75% 85%, rgba(255,217,201,.7), transparent 30%),
         linear-gradient(135deg, #fbf4ff 0%, #fff7f2 50%, #f1edff 100%);
       min-height: 100vh; overflow-x: hidden;
+      transition: background .6s ease, color .4s ease;
     }
     body::before {
       content: ""; position: fixed; inset: 0; pointer-events: none; z-index: -1;
@@ -37,9 +58,22 @@
       background-image: radial-gradient(#9e80bd 1px, transparent 1px);
       background-size: 31px 31px;
       mask-image: linear-gradient(to bottom, black, transparent 85%);
+      -webkit-mask-image: linear-gradient(to bottom, black, transparent 85%);
+      transition: opacity .4s ease;
     }
     button, input { font: inherit; }
     button { cursor: pointer; }
+    :focus-visible {
+      outline: 3px solid #b08ed6;
+      outline-offset: 3px;
+      border-radius: 6px;
+    }
+    .skip-link {
+      position: absolute; left: -9999px; top: 8px; z-index: 100;
+      background: #4b355f; color: #fff; padding: 10px 16px; border-radius: 10px;
+      text-decoration: none; font-weight: 700;
+    }
+    .skip-link:focus { left: 12px; }
     .orb {
       position: fixed; border-radius: 50%; filter: blur(2px); opacity: .5;
       pointer-events: none; z-index: -1; animation: drift 14s ease-in-out infinite alternate;
@@ -50,7 +84,7 @@
     .wrap { width: min(1100px, calc(100% - 34px)); margin: auto; }
     .topbar {
       display:flex; justify-content:space-between; align-items:center; gap:14px;
-      padding: 22px 0;
+      padding: 22px 0; flex-wrap: wrap;
     }
     .brand { display:flex; align-items:center; gap:10px; font-weight:700; letter-spacing:.02em; }
     .brand-mark {
@@ -77,11 +111,12 @@
     .hero-copy { max-width:590px; color:var(--muted); font-size:1.06rem; line-height:1.85; }
     .hero-actions { display:flex; gap:12px; flex-wrap:wrap; margin-top:28px; }
     .btn {
-      border:0; border-radius:15px; padding:14px 20px; font-weight:700; transition:.22s ease;
+      border:0; border-radius:15px; padding:14px 20px; font-weight:700; transition:transform .22s ease, box-shadow .22s ease;
       display:inline-flex; align-items:center; justify-content:center; gap:9px;
     }
     .btn:hover { transform:translateY(-3px); }
     .btn-primary { color:white; background:linear-gradient(135deg,#8f6bbd,#c77fab); box-shadow:0 12px 28px #9e75bd4a; }
+    .btn-primary:hover { box-shadow:0 16px 34px #9e75bd5a; }
     .btn-soft { color:#77598f; background:rgba(255,255,255,.7); border:1px solid var(--line); }
     .art-stage { min-height:410px; display:grid; place-items:center; position:relative; }
     .moon-card {
@@ -117,19 +152,22 @@
     .section-head p { color:var(--muted); line-height:1.8; }
     .glass {
       background:var(--glass); border:1px solid #fff; border-radius:28px; box-shadow:var(--shadow);
-      backdrop-filter:blur(18px);
+      backdrop-filter:blur(18px); -webkit-backdrop-filter:blur(18px);
     }
     .gate { max-width:720px; margin:0 auto; padding:clamp(25px,5vw,48px); text-align:center; }
     .gate-icon { width:64px;height:64px;display:grid;place-items:center;border-radius:22px;background:#f1e5ff;color:#8d6bb8;font-size:1.8rem;margin:0 auto 20px; }
     .gate h2 { font-family:"Playfair Display",serif;font-size:2.2rem;margin-bottom:10px; }
     .gate p { color:var(--muted);line-height:1.75; }
     .countdown { display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:25px 0; }
-    .timebox { padding:17px 8px;background:#fff9ff;border:1px solid #e9dff4;border-radius:18px; }
+    .timebox { padding:17px 8px;background:var(--timebox-bg);border:1px solid var(--timebox-border);border-radius:18px; }
     .timebox strong { display:block;font-size:clamp(1.5rem,4vw,2.25rem);color:#7e5da6; }
     .timebox span { font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;color:#8c7b9a; }
     .password-row { display:flex;gap:10px;max-width:430px;margin:22px auto 0; }
-    .password-row input { min-width:0;flex:1;border:1px solid #e1d5ed;border-radius:14px;padding:14px 16px;background:#fffdfd;outline:none;color:var(--ink); }
-    .password-row input:focus { border-color:#ad8cd2;box-shadow:0 0 0 4px #d9c6f355; }
+    .password-row input {
+      min-width:0;flex:1;border:1px solid var(--line-strong);border-radius:14px;padding:14px 16px;
+      background:var(--input-bg);outline:none;color:var(--ink);transition:border-color .2s, box-shadow .2s;
+    }
+    .password-row input:focus { border-color:var(--input-focus);box-shadow:0 0 0 4px #d9c6f355; }
     .hint { font-size:.8rem!important;margin:12px 0 0; }
     .hidden { display:none!important; }
     .letter-card { max-width:820px;margin:auto;padding:clamp(26px,5vw,56px);position:relative; }
@@ -138,8 +176,8 @@
     .letter-card p { color:#665675;line-height:2;font-size:1.02rem; }
     .signature { font-family:"Playfair Display",serif;font-size:1.5rem!important;font-style:italic;color:#9b72c3!important;margin-top:28px; }
     .wish-grid { display:grid;grid-template-columns:repeat(3,1fr);gap:16px; }
-    .wish-card { padding:25px;border-radius:24px;background:#ffffffa8;border:1px solid #fff;box-shadow:0 15px 35px #8964a21a;transition:.25s; }
-    .wish-card:hover { transform:translateY(-5px) rotate(-.5deg); }
+    .wish-card { padding:25px;border-radius:24px;background:var(--card-bg);border:1px solid #fff;box-shadow:0 15px 35px #8964a21a;transition:transform .25s ease, box-shadow .25s ease; }
+    .wish-card:hover { transform:translateY(-5px) rotate(-.5deg); box-shadow:0 20px 45px #8964a22a; }
     .wish-icon { font-size:1.8rem;margin-bottom:14px; }
     .wish-card h3 { font-family:"Playfair Display",serif;font-size:1.35rem;margin-bottom:9px; }
     .wish-card p { color:var(--muted);line-height:1.75;margin-bottom:0;font-size:.94rem; }
@@ -148,25 +186,33 @@
     .memory-intro h2 { font-family:"Playfair Display",serif;font-size:2.2rem; }
     .memory-intro p { line-height:1.8;color:#715e80; }
     .memory-board { padding:22px;display:grid;grid-template-columns:1fr 1fr;gap:12px; }
-    .memory-note { background:#fffaf4;border-radius:18px;padding:18px;min-height:130px;box-shadow:0 8px 20px #9874a31a;transform:rotate(var(--tilt, -1deg)); }
-    .memory-note:nth-child(2) { --tilt:1deg;background:#f7f0ff; }.memory-note:nth-child(3){--tilt:1.5deg;background:#fff0f5}.memory-note:nth-child(4){--tilt:-1deg;background:#fff8e9}
-    .memory-note span { font-size:1.4rem; }.memory-note p { margin:12px 0 0;line-height:1.65;font-size:.91rem;color:#705e7c; }
+    .memory-note {
+      background:var(--note-bg-1); border-radius:18px; padding:18px; min-height:130px;
+      box-shadow:0 8px 20px #9874a31a; transform:rotate(var(--tilt, -1deg));
+      transition:transform .25s ease;
+    }
+    .memory-note:nth-child(2) { --tilt:1deg;background:var(--note-bg-2); }
+    .memory-note:nth-child(3) { --tilt:1.5deg;background:var(--note-bg-3); }
+    .memory-note:nth-child(4) { --tilt:-1deg;background:var(--note-bg-4); }
+    .memory-note span { font-size:1.4rem; }
+    .memory-note p { margin:12px 0 0;line-height:1.65;font-size:.91rem;color:#705e7c; }
     .game-card { max-width:760px;margin:auto;padding:clamp(24px,4vw,40px);text-align:center; }
     .game-card h2 { font-family:"Playfair Display",serif;font-size:2.2rem; }
     .game-card p { color:var(--muted);line-height:1.7; }
     .star-field { display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin:25px auto;max-width:470px; }
     .star {
       aspect-ratio:1;border:1px solid #e6d8f0;background:#fff8ff;border-radius:18px;color:#b9a0d6;font-size:1.8rem;
-      transition:.2s;
+      transition:transform .2s, background .3s, color .3s, border-color .3s;
     }
-    .star:hover { transform:scale(1.06) rotate(8deg); }.star.collected { background:#ffe8b9;color:#b98229;border-color:#ffd77b;box-shadow:0 5px 15px #edc66a40; }
+    .star:hover { transform:scale(1.06) rotate(8deg); }
+    .star.collected { background:#ffe8b9;color:#b98229;border-color:#ffd77b;box-shadow:0 5px 15px #edc66a40; }
     .progress { height:8px;background:#eadff2;border-radius:99px;overflow:hidden;max-width:470px;margin:0 auto 12px; }
-    .progress span { display:block;height:100%;width:0;background:linear-gradient(90deg,#ad8cda,#f1a8ca);transition:width .3s; }
-    .message-box { max-width:680px;margin:18px auto 0;padding:23px;background:#fff9ff;border-radius:20px;color:#75598d;line-height:1.8;min-height:78px; }
+    .progress span { display:block;height:100%;width:0;background:linear-gradient(90deg,#ad8cda,#f1a8ca);transition:width .3s ease; }
+    .message-box { max-width:680px;margin:18px auto 0;padding:23px;background:var(--card-bg-alt);border-radius:20px;color:#75598d;line-height:1.8;min-height:78px; }
     .secret-wrap { text-align:center; }
     .envelope {
       width:150px;height:105px;border:0;background:linear-gradient(135deg,#c6b1ed,#edb2d1);border-radius:14px;
-      position:relative;box-shadow:0 18px 30px #9977b544;transition:.25s;margin:8px auto 22px;
+      position:relative;box-shadow:0 18px 30px #9977b544;transition:transform .25s;margin:8px auto 22px;display:block;
     }
     .envelope::before { content:"";position:absolute;inset:0;background:linear-gradient(35deg,transparent 49%,#fff8 50%,transparent 52%),linear-gradient(-35deg,transparent 49%,#fff8 50%,transparent 52%);border-radius:14px; }
     .envelope::after { content:"♡";position:absolute;left:50%;top:48%;transform:translate(-50%,-50%);color:white;font-size:2rem; }
@@ -176,43 +222,87 @@
     .final-card h2 { font-family:"Playfair Display",serif;font-size:clamp(2.5rem,5vw,4.4rem);margin:16px 0; }
     .final-card p { max-width:680px;margin:0 auto 22px;color:var(--muted);line-height:1.9; }
     footer { text-align:center;padding:45px 0 30px;color:#8d7c9b;font-size:.85rem; }
-    .toast { position:fixed;bottom:20px;left:50%;transform:translate(-50%,20px);background:#4b355f;color:white;padding:13px 18px;border-radius:14px;opacity:0;pointer-events:none;transition:.25s;z-index:20;box-shadow:0 10px 30px #37264a33;max-width:calc(100% - 30px);text-align:center; }
+    .toast {
+      position:fixed;bottom:20px;left:50%;transform:translate(-50%,20px);
+      background:#4b355f;color:white;padding:13px 18px;border-radius:14px;
+      opacity:0;pointer-events:none;transition:opacity .25s, transform .25s;z-index:20;
+      box-shadow:0 10px 30px #37264a33;max-width:calc(100% - 30px);text-align:center;
+    }
     .toast.show { opacity:1;transform:translate(-50%,0); }
     .confetti { position:fixed;top:-15px;width:9px;height:13px;z-index:30;pointer-events:none;animation:fall 3.2s linear forwards;border-radius:3px; }
     @keyframes fall { to { transform:translateY(110vh) rotate(760deg);opacity:.2; } }
-
-    /* Extra life: cursor sparkles, gentle card tilt, theme toggle, and mood picker */
     .life-controls { display:flex; justify-content:center; align-items:center; gap:10px; flex-wrap:wrap; margin-top:20px; }
-    .mini-control { border:1px solid var(--line); background:#ffffffa8; color:#77598f; border-radius:999px; padding:10px 14px; font-size:.82rem; font-weight:700; }
+    .mini-control {
+      border:1px solid var(--line); background:var(--glass-solid); color:#77598f;
+      border-radius:999px; padding:10px 14px; font-size:.82rem; font-weight:700;
+      transition:transform .2s, box-shadow .2s;
+    }
     .mini-control:hover { transform:translateY(-2px); box-shadow:0 8px 20px #9874a322; }
     .mood-panel { max-width:800px; margin:0 auto; padding:clamp(24px,4vw,38px); text-align:center; }
     .mood-options { display:flex; gap:10px; flex-wrap:wrap; justify-content:center; margin:20px 0; }
-    .mood-btn { border:1px solid #e8d9f1; background:#fffaff; color:#765a8d; padding:12px 16px; border-radius:16px; font-weight:700; transition:.2s; }
-    .mood-btn:hover,.mood-btn.active { background:linear-gradient(135deg,#e5d9ff,#ffe0eb); border-color:#c6a8df; transform:translateY(-2px); }
-    .mood-result { min-height:72px; padding:18px; background:#fff8ff; border-radius:18px; color:#765b8d; line-height:1.8; }
+    .mood-btn {
+      border:1px solid var(--line-strong); background:var(--card-bg-alt); color:#765a8d;
+      padding:12px 16px; border-radius:16px; font-weight:700; transition:transform .2s, background .3s, border-color .3s;
+    }
+    .mood-btn:hover, .mood-btn.active {
+      background:var(--mood-active-bg); border-color:var(--mood-active-border); transform:translateY(-2px);
+    }
+    .mood-result { min-height:72px; padding:18px; background:var(--card-bg-alt); border-radius:18px; color:#765b8d; line-height:1.8; }
     .tap-heart { position:fixed; z-index:50; pointer-events:none; animation:heartFloat 1.25s ease-out forwards; font-size:22px; }
-    @keyframes heartFloat { 0%{opacity:0;transform:translate(-50%,-20%) scale(.5)} 20%{opacity:1} 100%{opacity:0;transform:translate(calc(-50% + var(--drift)), -95px) scale(1.35) rotate(18deg)} }
-    .reveal-in { opacity:0; transform:translateY(22px); transition:opacity .75s ease,transform .75s cubic-bezier(.2,.75,.2,1); }
+    @keyframes heartFloat {
+      0% { opacity:0; transform:translate(-50%,-20%) scale(.5); }
+      20% { opacity:1; }
+      100% { opacity:0; transform:translate(calc(-50% + var(--drift)), -95px) scale(1.35) rotate(18deg); }
+    }
+    .reveal-in { opacity:0; transform:translateY(22px); transition:opacity .75s ease, transform .75s cubic-bezier(.2,.75,.2,1); }
     .reveal-in.visible { opacity:1; transform:translateY(0); }
-    .hero-copy .typed-caret { display:inline-block; width:2px; height:1em; background:#9b72c3; margin-left:3px; vertical-align:-.12em; animation:blink .8s step-end infinite; }
+    .hero-copy .typed-caret {
+      display:inline-block; width:2px; height:1em; background:#9b72c3;
+      margin-left:3px; vertical-align:-.12em; animation:blink .8s step-end infinite;
+    }
     @keyframes blink { 50%{opacity:0} }
+
+    /* Night mode via CSS variables — extensible, no long selector chains */
     body.night-mode {
-      --ink:#f7efff; --muted:#d0c0e0; --glass:rgba(44,32,65,.72); --line:rgba(235,217,255,.2);
-      background:radial-gradient(ellipse at 8% 8%,#5b3e7966,transparent 35%),radial-gradient(ellipse at 90% 20%,#9d5d8d55,transparent 35%),linear-gradient(135deg,#191326,#271b37 55%,#21182f);
+      --ink:#f7efff;
+      --muted:#d0c0e0;
+      --glass:rgba(44,32,65,.72);
+      --glass-solid:#342744;
+      --card-bg:#342744;
+      --card-bg-alt:#342744;
+      --note-bg-1:#3a2c4d;
+      --note-bg-2:#3d2d52;
+      --note-bg-3:#412c4d;
+      --note-bg-4:#3a2d40;
+      --line:rgba(235,217,255,.2);
+      --line-strong:#59466b;
+      --timebox-bg:#342744;
+      --timebox-border:#59466b;
+      --input-bg:#2b2038;
+      --input-focus:#b08ed6;
+      --mood-active-bg:linear-gradient(135deg,#4a3760,#5a3a55);
+      --mood-active-border:#8b6bab;
+      background:var(--night-bg);
     }
     body.night-mode::before { opacity:.18; background-image:radial-gradient(#f8dfff 1px,transparent 1px); }
-    body.night-mode .top-note, body.night-mode .hero-copy, body.night-mode .section-head p,
-    body.night-mode .gate p, body.night-mode .letter-card p, body.night-mode .wish-card p,
-    body.night-mode .memory-intro p, body.night-mode .memory-note p, body.night-mode .game-card p,
-    body.night-mode .secret-message, body.night-mode .final-card p, body.night-mode footer { color:#d0c0e0; }
-    body.night-mode .wish-card, body.night-mode .memory-note, body.night-mode .timebox,
-    body.night-mode .password-row input, body.night-mode .message-box, body.night-mode .mood-result,
-    body.night-mode .mood-btn, body.night-mode .mini-control { background:#342744; color:#f6eaff; border-color:#59466b; }
-    body.night-mode .memory-intro { background:linear-gradient(145deg,#4c3b68,#583b58); }
+    body.night-mode .letter-card p,
+    body.night-mode .memory-note p,
+    body.night-mode .memory-intro p,
+    body.night-mode .secret-message { color:#d0c0e0; }
+    body.night-mode .timebox strong { color:#e2c8ff; }
+    body.night-mode .timebox span { color:#b3a2c4; }
     body.night-mode .gate-icon { background:#4a3760; color:#f0d9ff; }
     body.night-mode .pill { background:#30233f; color:#e6d5f6; }
-    @media(max-width:480px) { .mood-btn { flex:1 1 42%; } }
+    body.night-mode .memory-intro { background:linear-gradient(145deg,#4c3b68,#583b58); }
+    body.night-mode .star { background:#2f2340; border-color:#59466b; color:#8b7aa8; }
+    body.night-mode .star.collected { background:#5a4724; color:#ffd77b; border-color:#8a6e2c; }
+    body.night-mode .progress { background:#3a2c4d; }
+    body.night-mode .mood-btn { color:#e6d5f6; }
+    body.night-mode .mood-result, body.night-mode .message-box { color:#e0d2f0; }
+    body.night-mode .btn-soft { color:#e6d5f6; background:#342744; }
+    body.night-mode .sticker { background:#2b2038ee; color:#e6d5f6; }
 
+    @media(max-width:480px) { .mood-btn { flex:1 1 42%; } }
     @media(max-width:780px) {
       .hero { grid-template-columns:1fr; padding-top:28px; }
       .hero-copy { max-width:680px; }
@@ -241,40 +331,57 @@
       .timebox span { font-size:.6rem; }
       .password-row { flex-direction:column; }
       .password-row .btn { width:100%; }
-      .memory-board { grid-template-columns:1fr 1fr;padding:12px;gap:8px; }
-      .memory-note { padding:13px;min-height:145px; }
-      .memory-note p { font-size:.83rem; }
+      .memory-board { grid-template-columns:1fr; padding:12px; gap:10px; }
+      .memory-note { padding:15px; min-height:auto; }
+      .memory-note p { font-size:.88rem; }
       .star-field { gap:6px; }
-      .star { border-radius:13px;font-size:1.4rem; }
+      .star { border-radius:13px; font-size:1.4rem; }
     }
     @media(prefers-reduced-motion:reduce) {
-      *,*::before,*::after { animation-duration:.01ms!important;animation-iteration-count:1!important;scroll-behavior:auto!important;transition:none!important; }
+      *, *::before, *::after {
+        animation-duration:.01ms !important;
+        animation-iteration-count:1 !important;
+        scroll-behavior:auto !important;
+        transition-duration:.01ms !important;
+      }
+      .reveal-in { opacity:1; transform:none; }
     }
   </style>
 </head>
 <body>
+  <a class="skip-link" href="#main-content">Skip to content</a>
   <div class="orb one"></div><div class="orb two"></div>
+
   <header class="wrap topbar">
-    <div class="brand"><span class="brand-mark">♡</span><span>A LITTLE DREAMSCAPE</span></div>
+    <div class="brand"><span class="brand-mark" aria-hidden="true">♡</span><span>A LITTLE DREAMSCAPE</span></div>
     <div class="top-note">A tiny corner of the universe, just for you.</div>
-    <div class="life-controls" style="margin:0"><button class="mini-control" id="themeToggle" aria-pressed="false">☾ Night mode</button><span class="pill">Made with love ✦</span></div>
+    <div class="life-controls" style="margin:0">
+      <button type="button" class="mini-control" id="themeToggle" aria-pressed="false">☾ Night mode</button>
+      <span class="pill">Made with love ✦</span>
+    </div>
   </header>
 
-  <main class="wrap">
+  <main class="wrap" id="main-content">
     <section class="hero" aria-label="Welcome">
       <div>
         <div class="eyebrow">A little surprise for someone special</div>
         <h1>For you,<br><em>Bhaji.</em></h1>
-        <p class="hero-copy">Some people make ordinary days feel a little brighter. This little corner of the internet is for one of those people — a collection of kind words, tiny surprises, and all the birthday wishes I want you to keep close. ♡<br><strong id="typedLine" style="color:#9b72c3;font-weight:700"></strong><span class="typed-caret" aria-hidden="true"></span></p>
+        <p class="hero-copy">
+          Some people make ordinary days feel a little brighter. This little corner of the internet is for one of those people — a collection of kind words, tiny surprises, and all the birthday wishes I want you to keep close. ♡<br>
+          <strong id="typedLine" style="color:#9b72c3;font-weight:700" aria-live="polite"></strong><span class="typed-caret" aria-hidden="true"></span>
+        </p>
         <div class="hero-actions">
-          <button class="btn btn-primary" onclick="document.querySelector('#countdown-section').scrollIntoView({behavior:'smooth'})">Find your surprise <span>↓</span></button>
-          <button class="btn btn-soft" onclick="showToast('A reminder from me: you are very, very loved. ♡')">A tiny reminder ♡</button>
+          <button type="button" class="btn btn-primary" id="findSurpriseBtn">Find your surprise <span aria-hidden="true">↓</span></button>
+          <button type="button" class="btn btn-soft" id="reminderBtn">A tiny reminder ♡</button>
         </div>
       </div>
       <div class="art-stage" aria-label="Dreamy moon illustration">
         <div class="moon-card">
-          <span class="spark s1">✦</span><span class="spark s2">✧</span><span class="spark s3">✦</span>
-          <div class="moon-face">☾</div><div class="cloud">☁</div>
+          <span class="spark s1" aria-hidden="true">✦</span>
+          <span class="spark s2" aria-hidden="true">✧</span>
+          <span class="spark s3" aria-hidden="true">✦</span>
+          <div class="moon-face" aria-hidden="true">☾</div>
+          <div class="cloud" aria-hidden="true">☁</div>
         </div>
         <div class="sticker a">you deserve good things ✧</div>
         <div class="sticker b">a little love, always ♡</div>
@@ -288,10 +395,10 @@
         <p>There's a little something waiting behind this door. Come back when the countdown reaches zero, enter the number you know, and let the birthday magic begin.</p>
       </div>
       <div class="glass gate" id="gate">
-        <div class="gate-icon">✧</div>
+        <div class="gate-icon" aria-hidden="true">✧</div>
         <h2>Until your moment</h2>
         <p>The surprise opens on <strong>19 October 2026 at 12:00 AM IST</strong>.</p>
-        <div class="countdown" aria-label="Countdown">
+        <div class="countdown" id="countdown" aria-label="Countdown to the surprise" role="timer">
           <div class="timebox"><strong id="days">--</strong><span>Days</span></div>
           <div class="timebox"><strong id="hours">--</strong><span>Hours</span></div>
           <div class="timebox"><strong id="minutes">--</strong><span>Minutes</span></div>
@@ -299,9 +406,9 @@
         </div>
         <div class="password-row">
           <input id="password" type="password" inputmode="numeric" autocomplete="off" placeholder="Enter the secret number" aria-label="Secret number" />
-          <button class="btn btn-primary" id="unlockBtn">Unlock ♡</button>
+          <button type="button" class="btn btn-primary" id="unlockBtn">Unlock ♡</button>
         </div>
-        <p class="hint" id="gateHint">You know the number. ♡</p>
+        <p class="hint" id="gateHint" aria-live="polite">You know the number. ♡</p>
       </div>
     </section>
 
@@ -331,15 +438,14 @@
           <p>Open your heart to the good things, even the tiny ones.</p>
         </div>
         <div class="wish-grid">
-          <article class="wish-card"><div class="wish-icon">🌷</div><h3>Feel loved</h3><p>You are loved. I hope you never have to wonder if you matter. You do, more than you might realise.</p></article>
-          <article class="wish-card"><div class="wish-icon">☁️</div><h3>Be gentle with you</h3><p>You give so much kindness to others. I hope you remember to give some of that kindness to yourself, too.</p></article>
-          <article class="wish-card"><div class="wish-icon">🦋</div><h3>Grow at your pace</h3><p>You don't need to race anyone. Your life is yours, and you are allowed to grow at your own pace.</p></article>
-          <article class="wish-card"><div class="wish-icon">🌙</div><h3>Keep dreaming</h3><p>I hope you find the courage to try the things you want, even if you feel nervous at first.</p></article>
-          <article class="wish-card"><div class="wish-icon">🍓</div><h3>Choose joy</h3><p>Make room for the things that make you feel alive, calm, excited, and truly yourself.</p></article>
-          <article class="wish-card"><div class="wish-icon">✨</div><h3>More memories</h3><p>I hope we get many more laughs, stories, and little moments to add to our friendship.</p></article>
+          <article class="wish-card"><div class="wish-icon" aria-hidden="true">🌷</div><h3>Feel loved</h3><p>You are loved. I hope you never have to wonder if you matter. You do, more than you might realise.</p></article>
+          <article class="wish-card"><div class="wish-icon" aria-hidden="true">☁️</div><h3>Be gentle with you</h3><p>You give so much kindness to others. I hope you remember to give some of that kindness to yourself, too.</p></article>
+          <article class="wish-card"><div class="wish-icon" aria-hidden="true">🦋</div><h3>Grow at your pace</h3><p>You don't need to race anyone. Your life is yours, and you are allowed to grow at your own pace.</p></article>
+          <article class="wish-card"><div class="wish-icon" aria-hidden="true">🌙</div><h3>Keep dreaming</h3><p>I hope you find the courage to try the things you want, even if you feel nervous at first.</p></article>
+          <article class="wish-card"><div class="wish-icon" aria-hidden="true">🍓</div><h3>Choose joy</h3><p>Make room for the things that make you feel alive, calm, excited, and truly yourself.</p></article>
+          <article class="wish-card"><div class="wish-icon" aria-hidden="true">✨</div><h3>More memories</h3><p>I hope we get many more laughs, stories, and little moments to add to our friendship.</p></article>
         </div>
       </section>
-
 
       <section id="mood-section">
         <div class="section-head">
@@ -349,11 +455,11 @@
         </div>
         <div class="glass mood-panel">
           <div class="mood-options" role="group" aria-label="Choose your mood">
-            <button class="mood-btn" data-mood="happy">☀️ Happy</button>
-            <button class="mood-btn" data-mood="tired">☁️ Tired</button>
-            <button class="mood-btn" data-mood="unsure">🦋 Unsure</button>
-            <button class="mood-btn" data-mood="sad">🌧️ A little low</button>
-            <button class="mood-btn" data-mood="excited">✨ Excited</button>
+            <button type="button" class="mood-btn" data-mood="happy">☀️ Happy</button>
+            <button type="button" class="mood-btn" data-mood="tired">☁️ Tired</button>
+            <button type="button" class="mood-btn" data-mood="unsure">🦋 Unsure</button>
+            <button type="button" class="mood-btn" data-mood="sad">🌧️ A little low</button>
+            <button type="button" class="mood-btn" data-mood="excited">✨ Excited</button>
           </div>
           <div class="mood-result" id="moodResult" aria-live="polite">Choose a mood, Bhaji. No matter what kind of day it is, you deserve gentleness. ♡</div>
         </div>
@@ -368,10 +474,10 @@
             <p style="margin-bottom:0"><strong>More pages are waiting to be written. ♡</strong></p>
           </div>
           <div class="glass memory-board">
-            <div class="memory-note"><span>💌</span><p>All the talks that somehow make time fly.</p></div>
-            <div class="memory-note"><span>😂</span><p>The random nonsense that becomes our funniest story.</p></div>
-            <div class="memory-note"><span>🌻</span><p>The little moments that quietly make a day better.</p></div>
-            <div class="memory-note"><span>🤍</span><p>Knowing that our friendship is one more good thing in life.</p></div>
+            <div class="memory-note"><span aria-hidden="true">💌</span><p>All the talks that somehow make time fly.</p></div>
+            <div class="memory-note"><span aria-hidden="true">😂</span><p>The random nonsense that becomes our funniest story.</p></div>
+            <div class="memory-note"><span aria-hidden="true">🌻</span><p>The little moments that quietly make a day better.</p></div>
+            <div class="memory-note"><span aria-hidden="true">🤍</span><p>Knowing that our friendship is one more good thing in life.</p></div>
           </div>
         </div>
       </section>
@@ -386,14 +492,14 @@
           <h2>Five little stars ✦</h2>
           <p id="gameText">Find all five to reveal one more message.</p>
           <div class="star-field" id="starField">
-            <button class="star" aria-label="Collect star 1" data-index="0">✧</button>
-            <button class="star" aria-label="Collect star 2" data-index="1">✧</button>
-            <button class="star" aria-label="Collect star 3" data-index="2">✧</button>
-            <button class="star" aria-label="Collect star 4" data-index="3">✧</button>
-            <button class="star" aria-label="Collect star 5" data-index="4">✧</button>
+            <button type="button" class="star" aria-label="Collect star 1" aria-pressed="false" data-index="0">✧</button>
+            <button type="button" class="star" aria-label="Collect star 2" aria-pressed="false" data-index="1">✧</button>
+            <button type="button" class="star" aria-label="Collect star 3" aria-pressed="false" data-index="2">✧</button>
+            <button type="button" class="star" aria-label="Collect star 4" aria-pressed="false" data-index="3">✧</button>
+            <button type="button" class="star" aria-label="Collect star 5" aria-pressed="false" data-index="4">✧</button>
           </div>
-          <div class="progress"><span id="progressBar"></span></div>
-          <div class="message-box" id="starMessage">Your first wish is waiting in a star. Tap one to begin. ♡</div>
+          <div class="progress" role="progressbar" aria-valuemin="0" aria-valuemax="5" aria-valuenow="0" id="progressBarEl"><span id="progressBar"></span></div>
+          <div class="message-box" id="starMessage" aria-live="polite">Your first wish is waiting in a star. Tap one to begin. ♡</div>
         </div>
       </section>
 
@@ -404,7 +510,7 @@
           <p>There's a tiny envelope with your name on it.</p>
         </div>
         <div class="secret-wrap">
-          <button class="envelope" id="envelope" aria-label="Open the secret envelope"></button>
+          <button type="button" class="envelope" id="envelope" aria-label="Open the secret envelope" aria-expanded="false"></button>
           <div class="glass secret-message hidden" id="secretMessage">If you ever forget how much you matter, please come back to this: you make my life better just by being part of it. I'm always cheering for you, Bhaji. ♡</div>
         </div>
       </section>
@@ -414,21 +520,65 @@
           <div class="eyebrow">One last wish</div>
           <h2>May life be kind to you.</h2>
           <p>If I could make one wish for you, it would be this: that you feel loved on your best days and your hardest ones, that you keep finding reasons to hope, and that life surprises you in the kindest ways. Happy birthday, Bhaji. I'm lucky to call you my best friend.</p>
-          <button class="btn btn-primary" id="finalWish">Make one more wish ✨</button>
+          <button type="button" class="btn btn-primary" id="finalWish">Make one more wish ✨</button>
         </div>
       </section>
     </div>
   </main>
-  <footer class="wrap">Made with love, a little imagination, and lots of good wishes. ♡<br><span>For Bhaji — today, tomorrow, and all the days after.</span></footer>
+
+  <footer class="wrap">
+    Made with love, a little imagination, and lots of good wishes. ♡<br>
+    <span>For Bhaji — today, tomorrow, and all the days after.</span>
+  </footer>
+
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
   <script>
-    // SETTINGS — edit these values if you ever need to change the birthday gate.
+    "use strict";
+
+    /* =========================================================
+       SETTINGS — edit these
+       ========================================================= */
+
+    // Set to true while testing to skip the countdown gate entirely.
+    // Set back to false before sharing.
+    const TESTING_MODE = false;
+
     const PASSWORD = "2010";
-    // India Standard Time is UTC+05:30. This opens at 12:00 AM IST on 19 Oct 2026.
-    const REVEAL_AT = new Date("2000-01-01T00:00:00.000Z");
+
+    // 12:00 AM IST on 19 Oct 2026. Explicit +05:30 offset = unambiguous.
+    const REVEAL_AT = new Date("2026-10-19T00:00:00+05:30");
+
+    // Stable keys for localStorage persistence
+    const STORAGE = {
+      unlocked: "bhaji:unlocked",
+      stars:    "bhaji:stars",
+      theme:    "bhaji:theme",
+      mood:     "bhaji:mood"
+    };
+
+    /* =========================================================
+       Safe localStorage wrapper (private mode can throw)
+       ========================================================= */
+    const store = {
+      get(key, fallback = null) {
+        try { const v = localStorage.getItem(key); return v === null ? fallback : v; }
+        catch { return fallback; }
+      },
+      set(key, value) {
+        try { localStorage.setItem(key, String(value)); } catch { /* ignore */ }
+      },
+      del(key) {
+        try { localStorage.removeItem(key); } catch { /* ignore */ }
+      }
+    };
 
     const $ = (id) => document.getElementById(id);
+    const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    /* =========================================================
+       Toast
+       ========================================================= */
     let toastTimer;
     function showToast(message) {
       const toast = $("toast");
@@ -437,41 +587,94 @@
       clearTimeout(toastTimer);
       toastTimer = setTimeout(() => toast.classList.remove("show"), 2800);
     }
+
+    /* =========================================================
+       Countdown
+       ========================================================= */
+    const countdownEls = {
+      days: $("days"), hours: $("hours"), minutes: $("minutes"), seconds: $("seconds"),
+      hint: $("gateHint")
+    };
+    let lastCountdownKey = "";
+
+    function isUnlockedByTime() {
+      return TESTING_MODE || Date.now() >= REVEAL_AT.getTime();
+    }
+
     function updateCountdown() {
       const remaining = Math.max(0, REVEAL_AT.getTime() - Date.now());
-      const days = Math.floor(remaining / 86400000);
-      const hours = Math.floor((remaining % 86400000) / 3600000);
-      const minutes = Math.floor((remaining % 3600000) / 60000);
-      const seconds = Math.floor((remaining % 60000) / 1000);
-      $("days").textContent = String(days).padStart(2,"0");
-      $("hours").textContent = String(hours).padStart(2,"0");
-      $("minutes").textContent = String(minutes).padStart(2,"0");
-      $("seconds").textContent = String(seconds).padStart(2,"0");
-      if (remaining === 0) $("gateHint").textContent = "The door is ready. Enter your secret number. ♡";
+      const d = Math.floor(remaining / 86400000);
+      const h = Math.floor((remaining % 86400000) / 3600000);
+      const m = Math.floor((remaining % 3600000) / 60000);
+      const s = Math.floor((remaining % 60000) / 1000);
+      const key = `${d}|${h}|${m}|${s}`;
+      if (key === lastCountdownKey) return; // no wasted DOM writes
+      lastCountdownKey = key;
+      countdownEls.days.textContent    = String(d).padStart(2, "0");
+      countdownEls.hours.textContent   = String(h).padStart(2, "0");
+      countdownEls.minutes.textContent = String(m).padStart(2, "0");
+      countdownEls.seconds.textContent = String(s).padStart(2, "0");
+      if (remaining === 0 && !store.get(STORAGE.unlocked)) {
+        countdownEls.hint.textContent = "The door is ready. Enter your secret number. ♡";
+      }
     }
     updateCountdown();
-    setInterval(updateCountdown, 1000);
+    const countdownInterval = setInterval(updateCountdown, 1000);
+    // Stop the interval when tab is hidden (battery-friendly). Restart on return.
+    document.addEventListener("visibilitychange", () => {
+      if (document.hidden) {
+        clearInterval(countdownInterval);
+      } else {
+        updateCountdown();
+        setInterval(updateCountdown, 1000);
+      }
+    });
+
+    /* =========================================================
+       Gate / unlock
+       ========================================================= */
+    const gate = $("gate");
+    const birthdayContent = $("birthday-content");
+    const passwordInput = $("password");
+    const unlockBtn = $("unlockBtn");
+
+    function revealBirthday({ confetti = true, toast = true, scroll = true } = {}) {
+      gate.classList.add("hidden");
+      birthdayContent.classList.remove("hidden");
+      passwordInput.value = "";
+      store.set(STORAGE.unlocked, "1");
+      if (toast) showToast("It's your moment, Bhaji. Happy birthday! ♡");
+      if (confetti) confettiBurst(70);
+      if (scroll) setTimeout(() => $("letter-section").scrollIntoView({ behavior: "smooth" }), 250);
+    }
 
     function tryUnlock() {
-      if (Date.now() < REVEAL_AT.getTime()) {
+      if (!isUnlockedByTime()) {
         showToast("Not yet, Bhaji. Your surprise is still counting down. ♡");
         return;
       }
-      if ($("password").value.trim() !== PASSWORD) {
-        $("gateHint").textContent = "Hmm, not quite. Try the number you know. ♡";
-        $("password").focus();
+      if (passwordInput.value.trim() !== PASSWORD) {
+        countdownEls.hint.textContent = "Hmm, not quite. Try the number you know. ♡";
+        passwordInput.focus();
         return;
       }
-      $("gate").classList.add("hidden");
-      $("birthday-content").classList.remove("hidden");
-      $("password").value = "";
-      showToast("It's your moment, Bhaji. Happy birthday! ♡");
-      confettiBurst(70);
-      setTimeout(() => $("letter-section").scrollIntoView({behavior:"smooth"}), 250);
+      revealBirthday();
     }
-    $("unlockBtn").addEventListener("click", tryUnlock);
-    $("password").addEventListener("keydown", e => { if (e.key === "Enter") tryUnlock(); });
+    unlockBtn.addEventListener("click", tryUnlock);
+    passwordInput.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") { e.preventDefault(); tryUnlock(); }
+    });
 
+    // Restore unlock state on reload
+    if (store.get(STORAGE.unlocked) === "1") {
+      // Only auto-reveal if the gate would actually let them through
+      if (isUnlockedByTime()) revealBirthday({ confetti: false, toast: false, scroll: false });
+      else store.del(STORAGE.unlocked); // stale unlock
+    }
+
+    /* =========================================================
+       Stars game
+       ========================================================= */
     const starWishes = [
       "Wish 1: May you find little reasons to smile, even on ordinary days. 🌷",
       "Wish 2: May the things you worry about become lighter with time. ☁️",
@@ -479,8 +682,32 @@
       "Wish 4: May you always have people who make you feel safe and understood. 🤍",
       "Wish 5: May this year bring you beautiful surprises you never saw coming. ✨"
     ];
-    const collected = new Set();
-    document.querySelectorAll(".star").forEach(button => {
+    const collected = new Set(
+      (store.get(STORAGE.stars) || "").split(",").filter(Boolean).map(Number)
+    );
+    const starMessage = $("starMessage");
+    const progressBar = $("progressBar");
+    const progressBarEl = $("progressBarEl");
+    const gameText = $("gameText");
+
+    function renderStars() {
+      document.querySelectorAll(".star").forEach((btn) => {
+        const i = Number(btn.dataset.index);
+        const got = collected.has(i);
+        btn.classList.toggle("collected", got);
+        btn.textContent = got ? "★" : "✧";
+        btn.setAttribute("aria-pressed", String(got));
+      });
+      progressBar.style.width = `${(collected.size / 5) * 100}%`;
+      progressBarEl.setAttribute("aria-valuenow", String(collected.size));
+      if (collected.size === 5) {
+        gameText.textContent = "You found every star. Your bonus wish is here!";
+        starMessage.textContent = "Bonus wish: no matter how much life changes, I hope you never forget that there is someone in your corner, cheering you on. Always. ♡";
+      }
+    }
+    renderStars();
+
+    document.querySelectorAll(".star").forEach((button) => {
       button.addEventListener("click", () => {
         const index = Number(button.dataset.index);
         if (collected.has(index)) {
@@ -488,134 +715,204 @@
           return;
         }
         collected.add(index);
-        button.classList.add("collected");
-        button.textContent = "★";
-        $("progressBar").style.width = `${collected.size / 5 * 100}%`;
-        $("starMessage").textContent = starWishes[index];
-        if (collected.size === 5) {
-          $("gameText").textContent = "You found every star. Your bonus wish is here!";
-          $("starMessage").textContent = "Bonus wish: no matter how much life changes, I hope you never forget that there is someone in your corner, cheering you on. Always. ♡";
-          confettiBurst(35);
-        }
+        store.set(STORAGE.stars, [...collected].join(","));
+        starMessage.textContent = starWishes[index];
+        renderStars();
+        if (collected.size === 5) confettiBurst(35);
       });
     });
-    $("envelope").addEventListener("click", () => {
-      $("secretMessage").classList.toggle("hidden");
-      $("envelope").setAttribute("aria-label", $("secretMessage").classList.contains("hidden") ? "Open the secret envelope" : "Close the secret envelope");
-      if (!$("secretMessage").classList.contains("hidden")) showToast("A tiny note, straight from the heart. 💌");
+
+    /* =========================================================
+       Envelope
+       ========================================================= */
+    const envelope = $("envelope");
+    const secretMessage = $("secretMessage");
+    envelope.addEventListener("click", () => {
+      const open = secretMessage.classList.toggle("hidden");
+      // toggle() returns true if class was ADDED → hidden → closed
+      const isOpen = !open;
+      envelope.setAttribute("aria-label", isOpen ? "Close the secret envelope" : "Open the secret envelope");
+      envelope.setAttribute("aria-expanded", String(isOpen));
+      if (isOpen) showToast("A tiny note, straight from the heart. 💌");
     });
+
+    /* =========================================================
+       Final wish
+       ========================================================= */
     $("finalWish").addEventListener("click", () => {
       showToast("Your wish has been sent to the universe. ✨");
       confettiBurst(85);
     });
+
+    /* =========================================================
+       Confetti
+       ========================================================= */
     function confettiBurst(amount) {
-      const colors = ["#d7b9f4","#f5b7d5","#ffdb9e","#b8e3d4","#c7c9ff","#fff4e5"];
-      for (let i=0;i<amount;i++) {
-        const piece = document.createElement("i");
+      if (prefersReducedMotion) return;
+      const colors = ["#d7b9f4", "#f5b7d5", "#ffdb9e", "#b8e3d4", "#c7c9ff", "#fff4e5"];
+      for (let i = 0; i < amount; i++) {
+        const piece = document.createElement("span");
         piece.className = "confetti";
-        piece.style.left = `${Math.random()*100}vw`;
-        piece.style.background = colors[Math.floor(Math.random()*colors.length)];
-        piece.style.animationDelay = `${Math.random()*0.7}s`;
-        piece.style.animationDuration = `${2.2+Math.random()*1.8}s`;
-        piece.style.transform = `rotate(${Math.random()*180}deg)`;
+        piece.style.left = `${Math.random() * 100}vw`;
+        piece.style.background = colors[Math.floor(Math.random() * colors.length)];
+        piece.style.animationDelay = `${Math.random() * 0.7}s`;
+        piece.style.animationDuration = `${2.2 + Math.random() * 1.8}s`;
+        piece.style.transform = `rotate(${Math.random() * 180}deg)`;
         document.body.appendChild(piece);
         setTimeout(() => piece.remove(), 4500);
       }
     }
 
-    // Make the page feel more alive without requiring any external libraries.
+    /* =========================================================
+       Typewriter
+       ========================================================= */
     const typedLine = $("typedLine");
-    const typedWords = ["You matter more than you know. ♡", "You deserve beautiful things. ✦", "Your story is still unfolding. ☾"];
-    let wordIndex = 0, charIndex = 0, deleting = false;
+    const typedWords = [
+      "You matter more than you know. ♡",
+      "You deserve beautiful things. ✦",
+      "Your story is still unfolding. ☾"
+    ];
+    let wordIndex = 0, charIndex = 0, deleting = false, typeTimer;
+
     function typeLoop() {
       if (!typedLine) return;
+      if (prefersReducedMotion) {
+        typedLine.textContent = typedWords[0];
+        return;
+      }
       const word = typedWords[wordIndex];
       typedLine.textContent = word.slice(0, charIndex);
       if (!deleting && charIndex < word.length) {
         charIndex++;
-        setTimeout(typeLoop, 58);
+        typeTimer = setTimeout(typeLoop, 58);
       } else if (!deleting) {
         deleting = true;
-        setTimeout(typeLoop, 1700);
+        typeTimer = setTimeout(typeLoop, 1700);
       } else if (charIndex > 0) {
         charIndex--;
-        setTimeout(typeLoop, 28);
+        typeTimer = setTimeout(typeLoop, 28);
       } else {
         deleting = false;
         wordIndex = (wordIndex + 1) % typedWords.length;
-        setTimeout(typeLoop, 350);
+        typeTimer = setTimeout(typeLoop, 350);
       }
     }
     typeLoop();
-
-    // Theme toggle: a small night-sky mode for a different mood.
-    $("themeToggle").addEventListener("click", () => {
-      const enabled = document.body.classList.toggle("night-mode");
-      $("themeToggle").textContent = enabled ? "☀ Light mode" : "☾ Night mode";
-      $("themeToggle").setAttribute("aria-pressed", String(enabled));
-      showToast(enabled ? "A little midnight magic. ☾" : "Back to the soft pastel skies. ♡");
+    document.addEventListener("visibilitychange", () => {
+      if (document.hidden) clearTimeout(typeTimer);
+      else typeLoop();
     });
 
-    // Mood check-in messages.
+    /* =========================================================
+       Hero buttons
+       ========================================================= */
+    $("findSurpriseBtn").addEventListener("click", () => {
+      $("countdown-section").scrollIntoView({ behavior: "smooth" });
+    });
+    $("reminderBtn").addEventListener("click", () => {
+      showToast("A reminder from me: you are very, very loved. ♡");
+    });
+
+    /* =========================================================
+       Theme toggle (persisted)
+       ========================================================= */
+    const themeToggle = $("themeToggle");
+    const themeColorMeta = $("themeColorMeta");
+    function applyTheme(night) {
+      document.body.classList.toggle("night-mode", night);
+      themeToggle.textContent = night ? "☀ Light mode" : "☾ Night mode";
+      themeToggle.setAttribute("aria-pressed", String(night));
+      themeColorMeta.setAttribute("content", night ? "#191326" : "#f7efff");
+    }
+    applyTheme(store.get(STORAGE.theme) === "night");
+    themeToggle.addEventListener("click", () => {
+      const night = !document.body.classList.contains("night-mode");
+      applyTheme(night);
+      store.set(STORAGE.theme, night ? "night" : "light");
+      showToast(night ? "A little midnight magic. ☾" : "Back to the soft pastel skies. ♡");
+    });
+
+    /* =========================================================
+       Mood picker (persisted)
+       ========================================================= */
     const moodMessages = {
-      happy: "Keep a little piece of this happiness with you. I hope today gives you a hundred tiny reasons to smile. ☀️",
-      tired: "You don't have to be productive every second. Rest is allowed, slowing down is allowed, and you deserve a soft place to land. ☁️",
-      unsure: "You don't need to have everything figured out right now. One small step is still a step, and I'm cheering for you. 🦋",
-      sad: "I'm sorry today feels heavy. You don't have to pretend to be okay all the time. Be gentle with yourself; this feeling isn't your whole story. 🤍",
+      happy:   "Keep a little piece of this happiness with you. I hope today gives you a hundred tiny reasons to smile. ☀️",
+      tired:   "You don't have to be productive every second. Rest is allowed, slowing down is allowed, and you deserve a soft place to land. ☁️",
+      unsure:  "You don't need to have everything figured out right now. One small step is still a step, and I'm cheering for you. 🦋",
+      sad:     "I'm sorry today feels heavy. You don't have to pretend to be okay all the time. Be gentle with yourself; this feeling isn't your whole story. 🤍",
       excited: "I hope this excitement takes you somewhere wonderful. Enjoy the little spark, chase the good things, and let yourself be proud. ✨"
     };
-    document.querySelectorAll(".mood-btn").forEach(button => {
+    const moodResult = $("moodResult");
+    function selectMood(key) {
+      document.querySelectorAll(".mood-btn").forEach((b) => {
+        b.classList.toggle("active", b.dataset.mood === key);
+      });
+      if (moodMessages[key]) moodResult.textContent = moodMessages[key];
+    }
+    document.querySelectorAll(".mood-btn").forEach((button) => {
       button.addEventListener("click", () => {
-        document.querySelectorAll(".mood-btn").forEach(b => b.classList.remove("active"));
-        button.classList.add("active");
-        $("moodResult").textContent = moodMessages[button.dataset.mood];
+        const key = button.dataset.mood;
+        selectMood(key);
+        store.set(STORAGE.mood, key);
       });
     });
+    const savedMood = store.get(STORAGE.mood);
+    if (savedMood && moodMessages[savedMood]) selectMood(savedMood);
 
-    // Reveal cards as they enter the viewport.
-    const revealTargets = document.querySelectorAll(".wish-card, .memory-note, .letter-card, .game-card, .mood-panel, .final-card");
-    if ("IntersectionObserver" in window) {
-      revealTargets.forEach(el => el.classList.add("reveal-in"));
-      const revealObserver = new IntersectionObserver(entries => {
-        entries.forEach(entry => {
+    /* =========================================================
+       Reveal-on-scroll
+       ========================================================= */
+    const revealTargets = document.querySelectorAll(
+      ".wish-card, .memory-note, .letter-card, .game-card, .mood-panel, .final-card"
+    );
+    if ("IntersectionObserver" in window && !prefersReducedMotion) {
+      revealTargets.forEach((el) => el.classList.add("reveal-in"));
+      const obs = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
           if (entry.isIntersecting) {
             entry.target.classList.add("visible");
-            revealObserver.unobserve(entry.target);
+            obs.unobserve(entry.target);
           }
         });
       }, { threshold: 0.12 });
-      revealTargets.forEach(el => revealObserver.observe(el));
+      revealTargets.forEach((el) => obs.observe(el));
     } else {
-      revealTargets.forEach(el => el.classList.add("visible"));
+      revealTargets.forEach((el) => el.classList.add("visible"));
     }
 
-    // Tap/click anywhere to release a tiny heart. Avoid interactive controls so clicks remain clear.
-    document.addEventListener("click", event => {
-      if (event.target.closest("button, input, a")) return;
-      const heart = document.createElement("span");
-      heart.className = "tap-heart";
-      heart.textContent = ["♡", "✦", "♥", "✧"][Math.floor(Math.random()*4)];
-      heart.style.left = `${event.clientX}px`;
-      heart.style.top = `${event.clientY}px`;
-      heart.style.color = ["#c17fb0","#9876c5","#e89fbd","#bd9bdf"][Math.floor(Math.random()*4)];
-      heart.style.setProperty("--drift", `${Math.random()*60-30}px`);
-      document.body.appendChild(heart);
-      setTimeout(() => heart.remove(), 1400);
-    });
+    /* =========================================================
+       Tap / click hearts
+       ========================================================= */
+    if (!prefersReducedMotion) {
+      document.addEventListener("click", (event) => {
+        if (event.target.closest("button, input, a, .envelope, .star, .mood-btn")) return;
+        const heart = document.createElement("span");
+        heart.className = "tap-heart";
+        heart.setAttribute("aria-hidden", "true");
+        heart.textContent = ["♡", "✦", "♥", "✧"][Math.floor(Math.random() * 4)];
+        heart.style.left = `${event.clientX}px`;
+        heart.style.top = `${event.clientY}px`;
+        heart.style.color = ["#c17fb0", "#9876c5", "#e89fbd", "#bd9bdf"][Math.floor(Math.random() * 4)];
+        heart.style.setProperty("--drift", `${Math.random() * 60 - 30}px`);
+        document.body.appendChild(heart);
+        setTimeout(() => heart.remove(), 1400);
+      });
+    }
 
-    // Gentle tilt on larger screens only.
-    if (window.matchMedia("(hover: hover) and (pointer: fine)").matches) {
-      document.querySelectorAll(".wish-card, .memory-note").forEach(card => {
-        card.addEventListener("mousemove", e => {
+    /* =========================================================
+       Gentle tilt on wish cards / memory notes (pointer-fine only)
+       ========================================================= */
+    if (!prefersReducedMotion && window.matchMedia("(hover: hover) and (pointer: fine)").matches) {
+      document.querySelectorAll(".wish-card, .memory-note").forEach((card) => {
+        card.addEventListener("mousemove", (e) => {
           const r = card.getBoundingClientRect();
-          const x = (e.clientX-r.left)/r.width-.5;
-          const y = (e.clientY-r.top)/r.height-.5;
-          card.style.transform = `perspective(700px) rotateX(${-y*3}deg) rotateY(${x*3}deg) translateY(-3px)`;
+          const x = (e.clientX - r.left) / r.width - 0.5;
+          const y = (e.clientY - r.top) / r.height - 0.5;
+          card.style.transform = `perspective(700px) rotateX(${-y * 3}deg) rotateY(${x * 3}deg) translateY(-3px)`;
         });
         card.addEventListener("mouseleave", () => { card.style.transform = ""; });
       });
     }
-
   </script>
 </body>
 </html>
